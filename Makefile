@@ -7,17 +7,17 @@ default: bench
 compiled: looprun noop_asm noop_c noop_chicken Noop.class
 
 looprun: looprun.c
-	gcc -std=c99 -o looprun looprun.c -lrt
+	gcc -O3 -s -std=c99 -o looprun looprun.c -lrt
 
 noop_c: noop.c
-	gcc -O3 -o noop_c noop.c
+	gcc -O3 -s -o noop_c noop.c
 
 noop_asm: noop.s
 	gcc -c noop.s
 	gcc -s -nostdlib -o noop_asm noop.o
 
 noop_chicken:
-	csc -O3 -o noop_chicken empty
+	csc -O3 -u -o noop_chicken empty
 
 Noop.class: Noop.java
 	javac Noop.java
