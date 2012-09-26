@@ -40,6 +40,7 @@ bench: bench_asm \
        bench_chicken_script \
        bench_ruby \
        bench_emacs \
+       bench_v8 \
        bench_py2 \
        bench_py3 \
        bench_java
@@ -88,6 +89,11 @@ bench_emacs: looprun
 	$(call announce,Emacs)
 	./looprun -2 /usr/bin/emacs --no-site-file --script empty
 	./looprun 100 /usr/bin/emacs --no-site-file --script empty
+
+bench_v8: looprun
+	$(call announce,"V8")
+	./looprun -2 /usr/bin/d8 empty
+	./looprun 200 /usr/bin/d8 empty
 
 bench_py2: looprun
 	$(call announce,"cpython 2")
