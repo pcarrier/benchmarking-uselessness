@@ -76,7 +76,7 @@ void main(int argc, char **argv, char **envp) {
 	}
 
 	for (long i = 0; i < cycles; i++) {
-		rc = posix_spawnp(&pid, argv[2], NULL, NULL, argv+2, envp);
+		rc = posix_spawn(&pid, argv[2], NULL, NULL, argv+2, envp);
 		if (rc != 0) {
 			perror("posix_spawnp");
 			exit(EXIT_FAILURE);
@@ -108,9 +108,9 @@ void main(int argc, char **argv, char **envp) {
 
 		/* yeah that should be stdout but fudge it */
 		rc = fprintf(stderr,
-			"average: %i.%09li\n"
-			"total: %i.%09li\n",
+			"%3i.%09li * %9li = %3i.%09li\n",
 			(int)(per_cycle.tv_sec), per_cycle.tv_nsec,
+			cycles,
 			(int)(elapsed.tv_sec), elapsed.tv_nsec);
 		if (rc < 0)
 			exit(EXIT_FAILURE);
