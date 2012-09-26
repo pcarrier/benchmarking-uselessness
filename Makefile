@@ -3,18 +3,28 @@
 .PHONY: default
 default: bench
 
-.PHONY: compiled
-compiled: looprun noop_asm noop_go noop_c noop_chicken Noop.class
+.PHONY: bin
+bin: looprun noop_asm noop_go noop_statc noop_dync noop_diet_statc noop_diet_dync noop_chicken Noop.class
 
 looprun: looprun.c
 	gcc -O3 -s -std=c99 -o looprun looprun.c -lrt
 
-noop_c: noop.c
-	gcc -O3 -s -o noop_c noop.c
+noop_dync: noop.c
+	gcc -O3 -s -o noop_dync noop.c
+
+noop_statc: noop.c
+	gcc -O3 -s -o noop_statc noop.c -static -static-libgcc
+
+# Somehow broken
+noop_diet_dync: noop.c
+	/opt/diet/bin/diet-dyn gcc -O3 -s -o noop_diet_dync noop.c
+
+noop_diet_statc: noop.c
+	/opt/diet/bin/diet gcc -O3 -s -o noop_diet_statc noop.c
 
 noop_asm: noop.s
 	gcc -c noop.s
-	gcc -s -nostdlib -o noop_asm noop.o
+	gcc -Wl,--build-id=none -s -nostdlib -o noop_asm noop.o
 
 noop_go: noop.go
 	go build -o noop_go noop.go
@@ -27,7 +37,7 @@ Noop.class: Noop.java
 
 .PHONY: clean
 clean:
-	rm looprun noop.o Noop.class noop_asm noop_c noop_go noop_chicken
+	rm looprun noop.o Noop.class noop_asm noop_statc noop_dync noop_diet_statc noop_diet_dync noop_go noop_chicken
 
 define announce
 printf "%-20s" $1:
@@ -35,13 +45,15 @@ endef
 
 .PHONY: bench
 bench: bench_asm \
+       bench_diet_statc \
+       bench_statc \
+       bench_dync \
        bench_go_c \
-       bench_c \
        bench_bb \
        bench_chicken_c \
+       bench_chicken_script \
        bench_zsh \
        bench_bash \
-       bench_chicken_script \
        bench_go_script \
        bench_ruby \
        bench_emacs \
@@ -66,10 +78,25 @@ bench_go_script: looprun
 	./looprun -2  /usr/bin/go run noop.go
 	./looprun 100 /usr/bin/go run noop.go
 
-bench_c: looprun noop_c
-	$(call announce,C)
-	./looprun -2   ./noop_c
-	./looprun 5000 ./noop_c
+bench_diet_statc: looprun noop_diet_statc
+	$(call announce,"C (diet, static)")
+	./looprun -2   ./noop_diet_statc
+	./looprun 5000 ./noop_diet_statc
+
+bench_diet_dync: looprun noop_diet_dync
+	$(call announce,"C (diet, dynamic)")
+	./looprun -2   ./noop_diet_dync
+	./looprun 5000 ./noop_diet_dync
+
+bench_statc: looprun noop_statc
+	$(call announce,"C (static)")
+	./looprun -2   ./noop_statc
+	./looprun 5000 ./noop_statc
+
+bench_dync: looprun noop_dync
+	$(call announce,"C (dynamic)")
+	./looprun -2   ./noop_dync
+	./looprun 5000 ./noop_dync
 
 bench_bb: looprun
 	$(call announce,"BusyBox shell")

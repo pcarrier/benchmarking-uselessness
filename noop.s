@@ -2,5 +2,5 @@
 .section .text
 _start:
 	mov	$60, %rax
-	mov	$0, %rdi
+	xor	%rdi, %rdi
 	syscall
