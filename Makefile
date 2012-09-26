@@ -24,7 +24,7 @@ Noop.class: Noop.java
 
 .PHONY: clean
 clean:
-	rm looprun noop.o Noop.class noop_asm noop_c
+	rm looprun noop.o Noop.class noop_asm noop_c noop_chicken
 
 define announce
 printf "%-20s" $1:
