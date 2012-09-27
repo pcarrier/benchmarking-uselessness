@@ -4,7 +4,15 @@
 default: bench
 
 .PHONY: bin
-bin: looprun noop_asm noop_go noop_statc noop_dync noop_diet_statc noop_diet_dync noop_chicken Noop.class
+bin: looprun \
+	noop_asm \
+	noop_go \
+	noop_statc \
+	noop_dync \
+	noop_diet \
+	noop_musl \
+	noop_chicken \
+	Noop.class
 
 looprun: looprun.c
 	gcc -O3 -s -std=c99 -o looprun looprun.c -lrt
@@ -15,12 +23,11 @@ noop_dync: noop.c
 noop_statc: noop.c
 	gcc -O3 -s -o noop_statc noop.c -static -static-libgcc
 
-# Somehow broken
-noop_diet_dync: noop.c
-	/opt/diet/bin/diet-dyn gcc -O3 -s -o noop_diet_dync noop.c
+noop_diet: noop.c
+	/opt/diet/bin/diet gcc -O3 -s -o noop_diet noop.c
 
-noop_diet_statc: noop.c
-	/opt/diet/bin/diet gcc -O3 -s -o noop_diet_statc noop.c
+noop_musl: noop.c
+	/usr/bin/musl-gcc -O3 -s -o noop_musl noop.c
 
 noop_asm: noop.s
 	gcc -c noop.s
@@ -37,7 +44,16 @@ Noop.class: Noop.java
 
 .PHONY: clean
 clean:
-	rm looprun noop.o Noop.class noop_asm noop_statc noop_dync noop_diet_statc noop_diet_dync noop_go noop_chicken
+	rm looprun \
+		noop.o \
+		Noop.class \
+		noop_asm \
+		noop_statc \
+		noop_dync \
+		noop_diet \
+		noop_musl \
+		noop_go \
+		noop_chicken
 
 define announce
 printf "%-20s" $1:
@@ -45,7 +61,8 @@ endef
 
 .PHONY: bench
 bench: bench_asm \
-       bench_diet_statc \
+       bench_diet \
+       bench_musl \
        bench_statc \
        bench_dync \
        bench_go_c \
@@ -78,15 +95,15 @@ bench_go_script: looprun
 	./looprun -2  /usr/bin/go run noop.go
 	./looprun 100 /usr/bin/go run noop.go
 
-bench_diet_statc: looprun noop_diet_statc
-	$(call announce,"C (diet, static)")
-	./looprun -2   ./noop_diet_statc
-	./looprun 5000 ./noop_diet_statc
+bench_diet: looprun noop_diet
+	$(call announce,"C (diet)")
+	./looprun -2   ./noop_diet
+	./looprun 5000 ./noop_diet
 
-bench_diet_dync: looprun noop_diet_dync
-	$(call announce,"C (diet, dynamic)")
-	./looprun -2   ./noop_diet_dync
-	./looprun 5000 ./noop_diet_dync
+bench_musl: looprun noop_musl
+	$(call announce,"C (musl)")
+	./looprun -2   ./noop_musl
+	./looprun 5000 ./noop_musl
 
 bench_statc: looprun noop_statc
 	$(call announce,"C (static)")
