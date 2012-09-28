@@ -48,22 +48,30 @@ void timespec_div(struct timespec dividend, long divisor,
 
 void main(int argc, char **argv, char **envp)
 {
-    int rc, status;
+    int rc, erc, status;
     long cycles;
     pid_t pid;
     bool timing = true;
     struct timespec before, after, elapsed, per_cycle;
     float spent;
+    const char *prg = argv[3];
 
-    if (argc < 3) {
-        fprintf(stderr, "needs 2+ params: cycles cmd [params]\n");
+    if (argc < 4) {
+        fprintf(stderr, "needs 3+ params: return cycles cmd [params]\n");
         exit(EXIT_FAILURE);
     }
 
     errno = 0;
-    cycles = strtol(argv[1], NULL, 10);
+    erc = strtol(argv[1], NULL, 10);
     if (errno != 0) {
-        perror("cycles");
+        perror("strtol erc");
+        exit(EXIT_FAILURE);
+    }
+
+    errno = 0;
+    cycles = strtol(argv[2], NULL, 10);
+    if (errno != 0) {
+        perror("strtol cycles");
         exit(EXIT_FAILURE);
     }
 
@@ -79,7 +87,7 @@ void main(int argc, char **argv, char **envp)
     }
 
     for (long i = 0; i < cycles; i++) {
-        rc = posix_spawn(&pid, argv[2], NULL, NULL, argv + 2, envp);
+        rc = posix_spawn(&pid, prg, NULL, NULL, argv + 3, envp);
         if (rc != 0) {
             perror("posix_spawnp");
             exit(EXIT_FAILURE);
@@ -92,9 +100,9 @@ void main(int argc, char **argv, char **envp)
         }
 
         rc = WEXITSTATUS(status);
-        if (rc != 0) {
-            fprintf(stderr, "%s returned %i during iteration %li\n",
-                    argv[2], rc, i);
+        if (rc != erc) {
+            fprintf(stderr, "%s returned %i != %i during iteration %li\n",
+                    prg, rc, erc, i);
             exit(EXIT_FAILURE);
         }
     }
