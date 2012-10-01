@@ -65,13 +65,12 @@ bench: bench_asm \
        bench_musl \
        bench_statc \
        bench_dync \
-       bench_go_c \
+       bench_go \
        bench_bb \
        bench_chicken_c \
        bench_chicken_script \
        bench_zsh \
        bench_bash \
-       bench_go_script \
        bench_ruby \
        bench_emacs \
        bench_node \
@@ -85,15 +84,10 @@ bench_asm: looprun noop_asm
 	./looprun 42 -2    ./noop_asm
 	./looprun 42 10000 ./noop_asm
 
-bench_go_c: looprun noop_go
-	$(call announce,"Go (compiled)")
+bench_go: looprun noop_go
+	$(call announce,"Go")
 	./looprun 42 -2   ./noop_go
 	./looprun 42 1000 ./noop_go
-
-bench_go_script: looprun
-	$(call announce,"Go (script)")
-	./looprun 42 -2  /usr/bin/go run noop.go
-	./looprun 42 100 /usr/bin/go run noop.go
 
 bench_diet: looprun noop_diet
 	$(call announce,"C (diet)")
@@ -122,8 +116,8 @@ bench_bb: looprun
 
 bench_bash: looprun
 	$(call announce,Bash)
-	./looprun 42 -2  /bin/bash --norc empty
-	./looprun 42 500 /bin/bash --norc empty
+	./looprun 42 -2  /bin/bash --norc noop.sh
+	./looprun 42 500 /bin/bash --norc noop.sh
 
 bench_chicken_c: looprun noop_chicken
 	$(call announce,"Chicken (compiled)")
@@ -147,18 +141,18 @@ bench_ruby: looprun
 
 bench_emacs: looprun
 	$(call announce,Emacs)
-	./looprun 0 -2  /usr/bin/emacs --no-site-file --script empty
-	./looprun 0 100 /usr/bin/emacs --no-site-file --script empty
+	./looprun 42 -2  /usr/bin/emacs --no-site-file --script noop.elisp
+	./looprun 42 100 /usr/bin/emacs --no-site-file --script noop.elisp
 
 bench_node: looprun
 	$(call announce,"Node.JS")
-	./looprun 0 -2  /usr/bin/node empty
-	./looprun 0 100 /usr/bin/node empty
+	./looprun 42 -2  /usr/bin/node noop.node.js
+	./looprun 42 100 /usr/bin/node noop.node.js
 
 bench_d8: looprun
 	$(call announce,"V8")
-	./looprun 0 -2  /usr/bin/d8 empty
-	./looprun 0 100 /usr/bin/d8 empty
+	./looprun 42 -2  /usr/bin/d8 noop.d8.js
+	./looprun 42 100 /usr/bin/d8 noop.d8.js
 
 bench_py2: looprun
 	$(call announce,"cpython 2")
