@@ -24,10 +24,10 @@ noop_statc: noop.c
 	gcc -O3 -s -o noop_statc noop.c -static -static-libgcc
 
 noop_diet: noop.c
-	/opt/diet/bin/diet gcc -O3 -s -o noop_diet noop.c
+	/opt/diet/bin/diet gcc -O3 -s -o noop_diet noop.c -static -static-libgcc
 
 noop_musl: noop.c
-	/usr/bin/musl-gcc -O3 -s -o noop_musl noop.c
+	/usr/bin/musl-gcc -O3 -s -o noop_musl noop.c -static -static-libgcc
 
 noop_asm: noop.s
 	gcc -c noop.s
@@ -137,7 +137,7 @@ bench_zsh: looprun
 bench_ruby: looprun
 	$(call announce,"MRI 1.9")
 	./looprun 42 -2  /usr/bin/ruby noop.sh
-	./looprun 42 500 /usr/bin/ruby noop.sh
+	./looprun 42 200 /usr/bin/ruby noop.sh
 
 bench_emacs: looprun
 	$(call announce,Emacs)
