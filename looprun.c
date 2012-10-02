@@ -57,7 +57,7 @@ void main(int argc, char **argv, char **envp)
     const char *prg = argv[3];
 
     if (argc < 4) {
-        fprintf(stderr, "needs 3+ params: return cycles cmd [params]\n");
+        fprintf(stderr, "needs 3+ params: ret cycles cmd [params]\n");
         exit(EXIT_FAILURE);
     }
 
