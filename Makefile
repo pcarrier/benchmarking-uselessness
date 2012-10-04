@@ -65,7 +65,6 @@ bench: bench_asm \
        bench_musl \
        bench_statc \
        bench_dync \
-       bench_go \
        bench_bb \
        bench_dash \
        bench_mksh \
@@ -73,6 +72,8 @@ bench: bench_asm \
        bench_bash \
        bench_zsh \
        bench_tcsh \
+       bench_go \
+       bench_awk \
        bench_php \
        bench_chicken_c \
        bench_chicken_script \
@@ -88,11 +89,6 @@ bench_asm: looprun noop_asm
 	$(call announce,Assembly)
 	./looprun 42 -2    ./noop_asm
 	./looprun 42 10000 ./noop_asm
-
-bench_go: looprun noop_go
-	$(call announce,"Go")
-	./looprun 42 -2   ./noop_go
-	./looprun 42 1000 ./noop_go
 
 bench_diet: looprun noop_diet
 	$(call announce,"C (diet)")
@@ -148,6 +144,16 @@ bench_tcsh: looprun
 	$(call announce,"tcsh")
 	./looprun 42 -2  /bin/tcsh -f ./noop.sh
 	./looprun 42 500 /bin/tcsh -f ./noop.sh
+
+bench_go: looprun noop_go
+	$(call announce,"Go")
+	./looprun 42 -2   ./noop_go
+	./looprun 42 1000 ./noop_go
+
+bench_awk: looprun
+	$(call announce,"AWK")
+	./looprun 42 -2   /usr/bin/awk -f noop.awk
+	./looprun 42 1000 /usr/bin/awk -f noop.awk
 
 bench_php: looprun
 	$(call announce,PHP5)
