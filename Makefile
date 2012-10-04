@@ -15,13 +15,13 @@ bin: looprun \
 	Noop.class
 
 looprun: looprun.c
-	gcc -O3 -s -std=c99 -o looprun looprun.c -lrt
+	gcc -s -O3 -std=c99 -Wall -Wextra -o looprun looprun.c -lrt
 
 noop_dync: noop.c
-	gcc -O3 -s -o noop_dync noop.c
+	gcc -s -O3 -o noop_dync noop.c
 
 noop_statc: noop.c
-	gcc -O3 -s -o noop_statc noop.c -static -static-libgcc
+	gcc -s -O3 -o noop_statc noop.c -static -static-libgcc
 
 noop_diet: noop.c
 	/opt/diet/bin/diet gcc -O3 -s -o noop_diet noop.c -static -static-libgcc
@@ -45,15 +45,15 @@ Noop.class: Noop.java
 .PHONY: clean
 clean:
 	rm looprun \
-		noop.o \
-		Noop.class \
-		noop_asm \
-		noop_statc \
-		noop_dync \
-		noop_diet \
-		noop_musl \
-		noop_go \
-		noop_chicken
+	noop.o \
+	Noop.class \
+	noop_asm \
+	noop_statc \
+	noop_dync \
+	noop_diet \
+	noop_musl \
+	noop_go \
+	noop_chicken
 
 define announce
 printf "%-20s" $1:
