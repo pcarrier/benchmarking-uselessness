@@ -9,25 +9,29 @@ bin: looprun \
 	noop_go \
 	noop_statc \
 	noop_dync \
-	noop_diet \
-	noop_musl \
+	noop_statdiet \
+	noop_statmusl \
+	noop_dynmusl \
 	noop_chicken \
 	Noop.class
 
 looprun: looprun.c
 	gcc -s -O3 -std=c99 -Wall -Wextra -o looprun looprun.c -lrt
 
-noop_dync: noop.c
-	gcc -s -O3 -o noop_dync noop.c
-
 noop_statc: noop.c
 	gcc -s -O3 -o noop_statc noop.c -static -static-libgcc
 
-noop_diet: noop.c
-	/opt/diet/bin/diet gcc -O3 -s -o noop_diet noop.c -static -static-libgcc
+noop_dync: noop.c
+	gcc -s -O3 -o noop_dync noop.c
 
-noop_musl: noop.c
-	/usr/bin/musl-gcc -O3 -s -o noop_musl noop.c -static -static-libgcc
+noop_statdiet: noop.c
+	/opt/diet/bin/diet gcc -O3 -s -o noop_statdiet noop.c -static -static-libgcc
+
+noop_statmusl: noop.c
+	/usr/bin/musl-gcc -O3 -s -o noop_statmusl noop.c -static -static-libgcc
+
+noop_dynmusl: noop.c
+	/usr/bin/musl-gcc -O3 -s -o noop_dynmusl noop.c
 
 noop_asm: noop.s
 	gcc -c noop.s
@@ -51,7 +55,8 @@ clean:
 	noop_statc \
 	noop_dync \
 	noop_diet \
-	noop_musl \
+	noop_statmusl \
+	noop_dynmusl \
 	noop_go \
 	noop_chicken
 
@@ -61,8 +66,9 @@ endef
 
 .PHONY: bench
 bench: bench_asm \
-       bench_diet \
-       bench_musl \
+       bench_statdiet \
+       bench_statmusl \
+       bench_dynmusl \
        bench_statc \
        bench_dync \
        bench_bb \
@@ -90,15 +96,20 @@ bench_asm: looprun noop_asm
 	./looprun 42 -2   ./noop_asm
 	./looprun 42 5000 ./noop_asm
 
-bench_diet: looprun noop_diet
-	$(call announce,"C (diet)")
-	./looprun 42 -2   ./noop_diet
-	./looprun 42 5000 ./noop_diet
+bench_statdiet: looprun noop_statdiet
+	$(call announce,"C (diet, static)")
+	./looprun 42 -2   ./noop_statdiet
+	./looprun 42 5000 ./noop_statdiet
 
-bench_musl: looprun noop_musl
-	$(call announce,"C (musl)")
-	./looprun 42 -2   ./noop_musl
-	./looprun 42 5000 ./noop_musl
+bench_statmusl: looprun noop_statmusl
+	$(call announce,"C (musl, static)")
+	./looprun 42 -2   ./noop_statmusl
+	./looprun 42 5000 ./noop_statmusl
+
+bench_dynmusl: looprun noop_dynmusl
+	$(call announce,"C (musl, dynamic)")
+	./looprun 42 -2   ./noop_dynmusl
+	./looprun 42 5000 ./noop_dynmusl
 
 bench_statc: looprun noop_statc
 	$(call announce,"C (static)")
