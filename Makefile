@@ -71,6 +71,7 @@ bench: bench_asm \
        bench_rc \
        bench_bash \
        bench_zsh \
+       bench_tcsh \
        bench_chicken_c \
        bench_chicken_script \
        bench_ruby \
@@ -135,6 +136,11 @@ bench_zsh: looprun
 	$(call announce,Zsh)
 	./looprun 42 -2  /bin/zsh --no-rcs noop.sh
 	./looprun 42 500 /bin/zsh --no-rcs noop.sh
+
+bench_tcsh: looprun
+	$(call announce,"tcsh")
+	./looprun 42 -2  /bin/tcsh -f ./noop.sh
+	./looprun 42 500 /bin/tcsh -f ./noop.sh
 
 bench_chicken_c: looprun noop_chicken
 	$(call announce,"Chicken (compiled)")
