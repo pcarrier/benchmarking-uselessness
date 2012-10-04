@@ -127,12 +127,12 @@ bench_dash: looprun
 bench_rc: looprun
 	$(call announce,"plan9 rc")
 	./looprun 42 -2  /opt/plan9/bin/rc ./noop.sh
-	./looprun 42 500 /opt/plan9/bin/rc ./noop.sh
+	./looprun 42 1000 /opt/plan9/bin/rc ./noop.sh
 
 bench_mksh: looprun
 	$(call announce,"mksh")
 	./looprun 42 -2  /bin/mksh ./noop.sh
-	./looprun 42 500 /bin/mksh ./noop.sh
+	./looprun 42 1000 /bin/mksh ./noop.sh
 
 bench_bash: looprun
 	$(call announce,Bash)
@@ -152,7 +152,7 @@ bench_tcsh: looprun
 bench_php: looprun
 	$(call announce,PHP5)
 	./looprun 42 -2  /usr/bin/php -n noop.php
-	./looprun 42 100 /usr/bin/php -n noop.php
+	./looprun 42 500 /usr/bin/php -n noop.php
 
 bench_chicken_c: looprun noop_chicken
 	$(call announce,"Chicken (compiled)")
