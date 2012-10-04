@@ -118,7 +118,7 @@ int main(int argc, char **argv, char **envp)
 
         /* yeah that should be stdout but fudge it */
         rc = fprintf(stderr,
-                     "%3i.%09li * %9li = %3i.%09li\n",
+                     "%3i.%09li * %6li = %5i.%09li\n",
                      (int) (per_cycle.tv_sec), per_cycle.tv_nsec,
                      cycles, (int) (elapsed.tv_sec), elapsed.tv_nsec);
         if (rc < 0)
