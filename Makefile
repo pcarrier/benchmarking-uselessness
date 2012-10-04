@@ -68,6 +68,7 @@ bench: bench_asm \
        bench_go \
        bench_bb \
        bench_dash \
+       bench_mksh \
        bench_rc \
        bench_bash \
        bench_zsh \
@@ -126,6 +127,11 @@ bench_rc: looprun
 	$(call announce,"plan9 rc")
 	./looprun 42 -2  /opt/plan9/bin/rc ./noop.sh
 	./looprun 42 500 /opt/plan9/bin/rc ./noop.sh
+
+bench_mksh: looprun
+	$(call announce,"mksh")
+	./looprun 42 -2  /bin/mksh ./noop.sh
+	./looprun 42 500 /bin/mksh ./noop.sh
 
 bench_bash: looprun
 	$(call announce,Bash)
