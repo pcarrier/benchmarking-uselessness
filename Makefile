@@ -79,16 +79,16 @@ bench: bench_asm \
        bench_chicken_script \
        bench_ruby \
        bench_emacs \
-       bench_node \
        bench_d8 \
+       bench_node \
        bench_py2 \
        bench_py3 \
        bench_java
 
 bench_asm: looprun noop_asm
 	$(call announce,Assembly)
-	./looprun 42 -2    ./noop_asm
-	./looprun 42 10000 ./noop_asm
+	./looprun 42 -2   ./noop_asm
+	./looprun 42 5000 ./noop_asm
 
 bench_diet: looprun noop_diet
 	$(call announce,"C (diet)")
@@ -108,7 +108,7 @@ bench_statc: looprun noop_statc
 bench_dync: looprun noop_dync
 	$(call announce,"C (dynamic)")
 	./looprun 42 -2   ./noop_dync
-	./looprun 42 5000 ./noop_dync
+	./looprun 42 3000 ./noop_dync
 
 bench_bb: looprun
 	$(call announce,"BusyBox shell")
@@ -147,28 +147,28 @@ bench_tcsh: looprun
 
 bench_go: looprun noop_go
 	$(call announce,"Go")
-	./looprun 42 -2   ./noop_go
-	./looprun 42 1000 ./noop_go
+	./looprun 42 -2  ./noop_go
+	./looprun 42 500 ./noop_go
 
 bench_awk: looprun
 	$(call announce,"AWK")
-	./looprun 42 -2   /usr/bin/awk -f noop.awk
-	./looprun 42 1000 /usr/bin/awk -f noop.awk
+	./looprun 42 -2  /usr/bin/awk -f noop.awk
+	./looprun 42 200 /usr/bin/awk -f noop.awk
 
 bench_php: looprun
 	$(call announce,PHP5)
 	./looprun 42 -2  /usr/bin/php -n noop.php
-	./looprun 42 500 /usr/bin/php -n noop.php
+	./looprun 42 200 /usr/bin/php -n noop.php
 
 bench_chicken_c: looprun noop_chicken
 	$(call announce,"Chicken (compiled)")
 	./looprun 42 -2  ./noop_chicken
-	./looprun 42 500 ./noop_chicken
+	./looprun 42 200 ./noop_chicken
 
 bench_chicken_script: looprun
 	$(call announce,"Chicken (script)")
 	./looprun 42 -2  /usr/bin/csi -s noop.scm
-	./looprun 42 500 /usr/bin/csi -s noop.scm
+	./looprun 42 200 /usr/bin/csi -s noop.scm
 
 bench_ruby: looprun
 	$(call announce,"MRI 1.9")
@@ -198,9 +198,9 @@ bench_py2: looprun
 bench_py3: looprun
 	$(call announce,"cpython 3")
 	./looprun 42 -2  /usr/bin/python3 noop.py
-	./looprun 42 100 /usr/bin/python3 noop.py
+	./looprun 42 50 /usr/bin/python3 noop.py
 
 bench_java: looprun Noop.class
 	$(call announce,"Java 7 (Oracle)")
 	./looprun 42 -2  /opt/java/bin/java Noop
-	./looprun 42 100 /opt/java/bin/java Noop
+	./looprun 42 50 /opt/java/bin/java Noop
