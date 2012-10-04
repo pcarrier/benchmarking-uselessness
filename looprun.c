@@ -46,14 +46,13 @@ void timespec_div(struct timespec dividend, long divisor,
     ns2timespec(t, out);
 }
 
-void main(int argc, char **argv, char **envp)
+int main(int argc, char **argv, char **envp)
 {
     int rc, erc, status;
     long cycles;
     pid_t pid;
     bool timing = true;
     struct timespec before, after, elapsed, per_cycle;
-    float spent;
     const char *prg = argv[3];
 
     if (argc < 4) {
@@ -125,5 +124,5 @@ void main(int argc, char **argv, char **envp)
         if (rc < 0)
             exit(EXIT_FAILURE);
     }
-    exit(EXIT_SUCCESS);
+    return(EXIT_SUCCESS);
 }
