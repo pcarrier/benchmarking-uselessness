@@ -73,6 +73,7 @@ bench: bench_asm \
        bench_bash \
        bench_zsh \
        bench_tcsh \
+       bench_php \
        bench_chicken_c \
        bench_chicken_script \
        bench_ruby \
@@ -147,6 +148,11 @@ bench_tcsh: looprun
 	$(call announce,"tcsh")
 	./looprun 42 -2  /bin/tcsh -f ./noop.sh
 	./looprun 42 500 /bin/tcsh -f ./noop.sh
+
+bench_php: looprun
+	$(call announce,PHP5)
+	./looprun 42 -2  /usr/bin/php -n noop.php
+	./looprun 42 100 /usr/bin/php -n noop.php
 
 bench_chicken_c: looprun noop_chicken
 	$(call announce,"Chicken (compiled)")
