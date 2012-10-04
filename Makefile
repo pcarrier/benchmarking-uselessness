@@ -67,10 +67,12 @@ bench: bench_asm \
        bench_dync \
        bench_go \
        bench_bb \
+       bench_dash \
+       bench_rc \
+       bench_bash \
+       bench_zsh \
        bench_chicken_c \
        bench_chicken_script \
-       bench_zsh \
-       bench_bash \
        bench_ruby \
        bench_emacs \
        bench_node \
@@ -114,10 +116,25 @@ bench_bb: looprun
 	./looprun 42 -2   /bin/busybox sh noop.sh
 	./looprun 42 3000 /bin/busybox sh noop.sh
 
+bench_dash: looprun
+	$(call announce,dash)
+	./looprun 42 -2   /bin/dash noop.sh
+	./looprun 42 1000 /bin/dash noop.sh
+
+bench_rc: looprun
+	$(call announce,"plan9 rc")
+	./looprun 42 -2  /opt/plan9/bin/rc ./noop.sh
+	./looprun 42 500 /opt/plan9/bin/rc ./noop.sh
+
 bench_bash: looprun
 	$(call announce,Bash)
 	./looprun 42 -2  /bin/bash --norc noop.sh
 	./looprun 42 500 /bin/bash --norc noop.sh
+
+bench_zsh: looprun
+	$(call announce,Zsh)
+	./looprun 42 -2  /bin/zsh --no-rcs noop.sh
+	./looprun 42 500 /bin/zsh --no-rcs noop.sh
 
 bench_chicken_c: looprun noop_chicken
 	$(call announce,"Chicken (compiled)")
@@ -128,11 +145,6 @@ bench_chicken_script: looprun
 	$(call announce,"Chicken (script)")
 	./looprun 42 -2  /usr/bin/csi -s noop.scm
 	./looprun 42 500 /usr/bin/csi -s noop.scm
-
-bench_zsh: looprun
-	$(call announce,Zsh)
-	./looprun 42 -2  /bin/zsh --no-rcs noop.sh
-	./looprun 42 500 /bin/zsh --no-rcs noop.sh
 
 bench_ruby: looprun
 	$(call announce,"MRI 1.9")
