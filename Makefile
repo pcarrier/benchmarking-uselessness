@@ -6,13 +6,20 @@ default: bench
 .PHONY: bin
 bin: looprun \
 	noop_asm \
-	noop_go \
 	noop_statc \
 	noop_dync \
+	noop_statf \
+	noop_dynf \
+	noop_staths \
+	noop_dynhs \
 	noop_statdiet \
 	noop_statmusl \
 	noop_dynmusl \
+	noop_go \
+	noop_ocaml \
+	noop_sbcl \
 	noop_chicken \
+	noop_mono.exe \
 	Noop.class
 
 looprun: looprun.c
@@ -23,6 +30,20 @@ noop_statc: noop.c
 
 noop_dync: noop.c
 	gcc -s -O3 -o noop_dync noop.c
+
+noop_statf: noop.f
+	gfortran -O3 -s -o noop_statf noop.f -static
+
+noop_dynf: noop.f
+	gfortran -O3 -s -o noop_dynf noop.f
+
+noop_staths: noop.hs
+	rm noop.hi || true # f things up
+	ghc -O3 -o noop_staths noop.hs -optl-static -optl-pthread
+
+noop_dynhs: noop.hs
+	rm noop.hi || true # f things up
+	ghc -O3 -o noop_dynhs noop.hs
 
 noop_statdiet: noop.c
 	/opt/diet/bin/diet gcc -O3 -s -o noop_statdiet noop.c -static -static-libgcc
@@ -37,11 +58,21 @@ noop_asm: noop.s
 	gcc -c noop.s
 	gcc -Wl,--build-id=none -s -nostdlib -o noop_asm noop.o
 
+noop_ocaml: noop.ml
+	ocamlopt -o noop_ocaml noop.ml
+	strip -x noop_ocaml
+
+noop_sbcl: noop.compile.sbcl
+	sbcl --load noop.compile.sbcl
+
 noop_go: noop.go
 	go build -o noop_go noop.go
 
 noop_chicken:
 	csc -O3 -u -o noop_chicken noop.scm
+
+noop_mono.exe: noop.cs
+	gmcs -out:noop_mono.exe noop.cs
 
 Noop.class: Noop.java
 	javac Noop.java
@@ -50,15 +81,23 @@ Noop.class: Noop.java
 clean:
 	rm looprun \
 	noop.o \
+	noop_mono.exe \
 	Noop.class \
 	noop_asm \
 	noop_statc \
 	noop_dync \
-	noop_diet \
+	noop_statf \
+	noop_dynf \
+	noop_staths \
+	noop_dynhs \
+	noop_statdiet \
 	noop_statmusl \
 	noop_dynmusl \
+	noop_ocaml noop.cmi noop.cmo noop.cmx \
+	noop_sbcl \
 	noop_go \
-	noop_chicken
+	noop_chicken \
+	|| true
 
 define announce
 printf "%-20s" $1:
@@ -71,18 +110,29 @@ bench: bench_asm \
        bench_dynmusl \
        bench_statc \
        bench_dync \
+       bench_statf \
+       bench_dynf \
+       bench_staths \
+       bench_dynhs \
+       bench_ocaml \
        bench_go \
+       bench_lua \
        bench_bb \
        bench_dash \
        bench_mksh \
        bench_rc \
+       bench_nawk \
+       bench_awk \
+       bench_tclsh \
        bench_bash \
        bench_zsh \
        bench_tcsh \
-       bench_awk \
        bench_php \
+       bench_perl \
        bench_chicken_c \
        bench_chicken_script \
+       bench_sbcl_c \
+       bench_sbcl_script \
        bench_ruby \
        bench_emacs \
        bench_d8 \
@@ -90,13 +140,14 @@ bench: bench_asm \
        bench_py2 \
        bench_py3 \
        bench_jamvm \
-       bench_java
+       bench_java \
+       bench_mono
 
 .PHONY: bench_asm
 bench_asm: looprun noop_asm
 	$(call announce,Assembly)
-	./looprun 42 -2   ./noop_asm
-	./looprun 42 5000 ./noop_asm
+	./looprun 42 -2    ./noop_asm
+	./looprun 42 10000 ./noop_asm
 
 .PHONY: bench_statdiet
 bench_statdiet: looprun noop_statdiet
@@ -127,6 +178,30 @@ bench_dync: looprun noop_dync
 	$(call announce,"C (dynamic)")
 	./looprun 42 -2   ./noop_dync
 	./looprun 42 3000 ./noop_dync
+
+.PHONY: bench_statf
+bench_statf: looprun noop_statf
+	$(call announce,"Fortran (static)")
+	./looprun 42 -2   ./noop_statf
+	./looprun 42 5000 ./noop_statf
+
+.PHONY: bench_dynf
+bench_dynf: looprun noop_dynf
+	$(call announce,"Fortran (dynamic)")
+	./looprun 42 -2   ./noop_dynf
+	./looprun 42 2000 ./noop_dynf
+
+.PHONY: bench_staths
+bench_staths: looprun noop_staths
+	$(call announce,"Haskell (static)")
+	./looprun 42 -2   ./noop_staths
+	./looprun 42 2000 ./noop_staths
+
+.PHONY: bench_dynhs
+bench_dynhs: looprun noop_dynhs
+	$(call announce,"Haskell (dynamic)")
+	./looprun 42 -2   ./noop_dynhs
+	./looprun 42 1000 ./noop_dynhs
 
 .PHONY: bench_bb
 bench_bb: looprun
@@ -170,17 +245,47 @@ bench_tcsh: looprun
 	./looprun 42 -2  /bin/tcsh -f ./noop.sh
 	./looprun 42 500 /bin/tcsh -f ./noop.sh
 
+.PHONY: bench_tclsh
+bench_tclsh: looprun
+	$(call announce,"tcl")
+	./looprun 42 -2  /usr/bin/tclsh ./noop.sh
+	./looprun 42 500 /usr/bin/tclsh ./noop.sh
+
+.PHONY: bench_ocaml
+bench_ocaml: looprun noop_ocaml
+	$(call announce,"OCaml")
+	./looprun 42 -2   ./noop_ocaml
+	./looprun 42 1000 ./noop_ocaml
+
 .PHONY: bench_go
 bench_go: looprun noop_go
 	$(call announce,"Go")
 	./looprun 42 -2   ./noop_go
 	./looprun 42 1000 ./noop_go
 
+.PHONY: bench_lua
+bench_lua: looprun
+	$(call announce,lua)
+	./looprun 42 -2   /usr/bin/lua ./noop.lua
+	./looprun 42 1000 /usr/bin/lua ./noop.lua
+
+.PHONY: bench_nawk
+bench_nawk: looprun
+	$(call announce,"nawk")
+	./looprun 42 -2   /usr/bin/nawk -f noop.awk
+	./looprun 42 1000 /usr/bin/nawk -f noop.awk
+
 .PHONY: bench_awk
 bench_awk: looprun
-	$(call announce,"AWK")
+	$(call announce,"awk (GNU)")
 	./looprun 42 -2  /usr/bin/awk -f noop.awk
 	./looprun 42 200 /usr/bin/awk -f noop.awk
+
+.PHONY: bench_perl
+bench_perl: looprun
+	$(call announce,"Perl 5")
+	./looprun 42 -2  /usr/bin/perl noop.pl
+	./looprun 42 500 /usr/bin/perl noop.pl
 
 .PHONY: bench_php
 bench_php: looprun
@@ -199,6 +304,18 @@ bench_chicken_script: looprun
 	$(call announce,"Chicken (script)")
 	./looprun 42 -2  /usr/bin/csi -s noop.scm
 	./looprun 42 200 /usr/bin/csi -s noop.scm
+
+.PHONY: bench_sbcl_c
+bench_sbcl_c: looprun noop_sbcl
+	$(call announce,"SBCL (compiled)")
+	./looprun 42 -2  ./noop_sbcl
+	./looprun 42 100 ./noop_sbcl
+
+.PHONY: bench_sbcl_script
+bench_sbcl_script: looprun
+	$(call announce,"SBCL (script)")
+	./looprun 42 -2  /usr/bin/sbcl --script noop.sbcl
+	./looprun 42 100 /usr/bin/sbcl --script noop.sbcl
 
 .PHONY: bench_ruby
 bench_ruby: looprun
@@ -247,3 +364,9 @@ bench_java: looprun Noop.class
 	$(call announce,"Java 7 (Oracle)")
 	./looprun 42 -2 /opt/java/bin/java Noop
 	./looprun 42 50 /opt/java/bin/java Noop
+
+.PHONY: bench_mono
+bench_mono: looprun noop_mono.exe
+	$(call announce,"Mono (C#)")
+	./looprun 42 -2  /usr/bin/mono ./noop_mono.exe
+	./looprun 42 100 /usr/bin/mono ./noop_mono.exe

@@ -1,0 +1,3 @@
+(defun main ()
+  (exit :code 42 :abort t))
+(save-lisp-and-die "noop_sbcl" :executable t :toplevel 'main :purify t)
