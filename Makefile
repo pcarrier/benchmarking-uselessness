@@ -104,7 +104,8 @@ printf "%-20s" $1:
 endef
 
 .PHONY: bench
-bench: bench_asm \
+bench: bin \
+	   bench_asm \
        bench_statdiet \
        bench_statmusl \
        bench_dynmusl \
