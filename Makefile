@@ -280,7 +280,7 @@ bench_nawk: looprun
 bench_awk: looprun
 	$(call announce,"awk (GNU)")
 	./looprun 42 -2  /usr/bin/awk -f noop.awk
-	./looprun 42 200 /usr/bin/awk -f noop.awk
+	./looprun 42 500 /usr/bin/awk -f noop.awk
 
 .PHONY: bench_perl
 bench_perl: looprun
