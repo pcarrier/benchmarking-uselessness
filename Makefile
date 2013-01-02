@@ -105,7 +105,7 @@ endef
 
 .PHONY: bench
 bench: bin \
-	   bench_asm \
+       bench_asm \
        bench_statdiet \
        bench_statmusl \
        bench_dynmusl \
