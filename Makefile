@@ -68,8 +68,8 @@ noop_sbcl: noop.compile.sbcl
 noop_go: noop.go
 	go build -o noop_go noop.go
 
-noop_chicken:
-	csc -O3 -u -o noop_chicken noop.scm
+noop_chicken: noop.chicken.scm
+	csc -O3 -u -o noop_chicken noop.chicken.scm
 
 noop_mono.exe: noop.cs
 	gmcs -out:noop_mono.exe noop.cs
@@ -132,6 +132,7 @@ bench: bin \
        bench_perl \
        bench_chicken_c \
        bench_chicken_script \
+       bench_guile \
        bench_sbcl_c \
        bench_sbcl_script \
        bench_ruby \
@@ -140,6 +141,7 @@ bench: bin \
        bench_node \
        bench_py2 \
        bench_py3 \
+       bench_avian \
        bench_jamvm \
        bench_java \
        bench_mono
@@ -303,8 +305,14 @@ bench_chicken_c: looprun noop_chicken
 .PHONY: bench_chicken_script
 bench_chicken_script: looprun
 	$(call announce,"Chicken (script)")
-	./looprun 42 -2  /usr/bin/csi -s noop.scm
-	./looprun 42 200 /usr/bin/csi -s noop.scm
+	./looprun 42 -2  /usr/bin/csi -s noop.chicken.scm
+	./looprun 42 200 /usr/bin/csi -s noop.chicken.scm
+
+.PHONY: bench_guile
+bench_guile: looprun
+	$(call announce,"guile")
+	./looprun 42 -2  /usr/bin/guile noop.guile.scm
+	./looprun 42 200 /usr/bin/guile noop.guile.scm
 
 .PHONY: bench_sbcl_c
 bench_sbcl_c: looprun noop_sbcl
@@ -327,8 +335,8 @@ bench_ruby: looprun
 .PHONY: bench_emacs
 bench_emacs: looprun
 	$(call announce,Emacs)
-	./looprun 42 -2  /usr/bin/emacs --no-site-file --script noop.elisp
-	./looprun 42 100 /usr/bin/emacs --no-site-file --script noop.elisp
+	./looprun 42 -2 /usr/bin/emacs -Q --script noop.elisp
+	./looprun 42 10 /usr/bin/emacs -Q --script noop.elisp
 
 .PHONY: bench_node
 bench_node: looprun
@@ -353,6 +361,12 @@ bench_py3: looprun
 	$(call announce,"cpython 3")
 	./looprun 42 -2 /usr/bin/python3 noop.py
 	./looprun 42 50 /usr/bin/python3 noop.py
+
+.PHONY: bench_avian
+bench_avian: looprun Noop.class
+	$(call announce,"Java (avian)")
+	./looprun 42 -2   /usr/bin/avian Noop
+	./looprun 42 1000 /usr/bin/avian Noop
 
 .PHONY: bench_jamvm
 bench_jamvm: looprun Noop.class
