@@ -43,7 +43,7 @@ noop_staths: noop.hs
 
 noop_dynhs: noop.hs
 	rm noop.hi || true # f things up
-	ghc -O3 -o noop_dynhs noop.hs
+	ghc -O3 -o noop_dynhs noop.hs -dynamic
 
 noop_statdiet: noop.c
 	/opt/diet/bin/diet gcc -O3 -s -o noop_statdiet noop.c -static -static-libgcc
