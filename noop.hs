@@ -1,6 +1,2 @@
-module Main where
 import System.Exit
-
-main :: IO ()
-main = do
- exitWith (ExitFailure 42)
+main = exitWith (ExitFailure 42)
