@@ -15,6 +15,7 @@ bin: looprun \
 	noop_statdiet \
 	noop_statmusl \
 	noop_dynmusl \
+	noop_mlton \
 	noop_go \
 	noop_ocaml \
 	noop_sbcl \
@@ -64,6 +65,9 @@ noop_ocaml: noop.ml
 
 noop_sbcl: noop.compile.sbcl
 	sbcl --load noop.compile.sbcl
+
+noop_mlton: noop.sml
+	mlton -output noop_mlton noop.sml
 
 noop_go: noop.go
 	go build -o noop_go noop.go
@@ -116,6 +120,7 @@ bench: bin \
        bench_staths \
        bench_dynhs \
        bench_ocaml \
+       bench_mlton \
        bench_go \
        bench_lua \
        bench_bb \
@@ -259,6 +264,12 @@ bench_ocaml: looprun noop_ocaml
 	$(call announce,"OCaml")
 	./looprun 42 -2   ./noop_ocaml
 	./looprun 42 1000 ./noop_ocaml
+
+.PHONY: bench_mlton
+bench_go: looprun noop_mlton
+	$(call announce,"MLton")
+	./looprun 42 -2   ./noop_mlton
+	./looprun 42 1000 ./noop_mlton
 
 .PHONY: bench_go
 bench_go: looprun noop_go
