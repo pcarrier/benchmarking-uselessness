@@ -146,7 +146,8 @@ bench: bin \
        bench_node \
        bench_py2 \
        bench_py3 \
-       bench_avian \
+       bench_statavian \
+       bench_dynavian \
        bench_jamvm \
        bench_java \
        bench_mono
@@ -266,7 +267,7 @@ bench_ocaml: looprun noop_ocaml
 	./looprun 42 1000 ./noop_ocaml
 
 .PHONY: bench_mlton
-bench_go: looprun noop_mlton
+bench_mlton: looprun noop_mlton
 	$(call announce,"MLton")
 	./looprun 42 -2   ./noop_mlton
 	./looprun 42 1000 ./noop_mlton
@@ -293,7 +294,7 @@ bench_nawk: looprun
 bench_awk: looprun
 	$(call announce,"awk (GNU)")
 	./looprun 42 -2  /usr/bin/awk -f noop.awk
-	./looprun 42 500 /usr/bin/awk -f noop.awk
+	./looprun 42 1000 /usr/bin/awk -f noop.awk
 
 .PHONY: bench_perl
 bench_perl: looprun
@@ -347,7 +348,7 @@ bench_ruby: looprun
 bench_emacs: looprun
 	$(call announce,Emacs)
 	./looprun 42 -2 /usr/bin/emacs -Q --script noop.elisp
-	./looprun 42 10 /usr/bin/emacs -Q --script noop.elisp
+	./looprun 42 100 /usr/bin/emacs -Q --script noop.elisp
 
 .PHONY: bench_node
 bench_node: looprun
@@ -365,7 +366,7 @@ bench_d8: looprun
 bench_py2: looprun
 	$(call announce,"cpython 2")
 	./looprun 42 -2  /usr/bin/python2 noop.py
-	./looprun 42 100 /usr/bin/python2 noop.py
+	./looprun 42 50 /usr/bin/python2 noop.py
 
 .PHONY: bench_py3
 bench_py3: looprun
@@ -373,11 +374,17 @@ bench_py3: looprun
 	./looprun 42 -2 /usr/bin/python3 noop.py
 	./looprun 42 50 /usr/bin/python3 noop.py
 
-.PHONY: bench_avian
-bench_avian: looprun Noop.class
+.PHONY: bench_statavian
+bench_statavian: looprun Noop.class
 	$(call announce,"Java (avian)")
 	./looprun 42 -2   /usr/bin/avian Noop
 	./looprun 42 1000 /usr/bin/avian Noop
+
+.PHONY: bench_dynavian
+bench_dynavian: looprun Noop.class
+	$(call announce,"Java (avian)")
+	./looprun 42 -2   /usr/bin/avian-dynamic Noop
+	./looprun 42 1000 /usr/bin/avian-dynamic Noop
 
 .PHONY: bench_jamvm
 bench_jamvm: looprun Noop.class
