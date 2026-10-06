@@ -21,6 +21,8 @@ bin: looprun \
 	noop_sbcl \
 	noop_chicken \
 	noop_mono.exe \
+	noop_rs \
+	noop_statrs \
 	Noop.class
 
 looprun: looprun.c
@@ -81,6 +83,16 @@ noop_mono.exe: noop.cs
 Noop.class: Noop.java
 	javac Noop.java
 
+noop_rs: noop.rs
+	rustc noop.rs -C opt-level=3 -o noop_rs
+	strip noop_rs
+
+noop_statrs: noop.rs
+	rustc noop.rs -o noop_statrs -C opt-level=3 \
+		--target x86_64-unknown-linux-musl \
+		-C 'target-feature=+crt-static'
+	strip noop_statrs
+
 .PHONY: clean
 clean:
 	rm looprun \
@@ -101,6 +113,8 @@ clean:
 	noop_sbcl \
 	noop_go \
 	noop_chicken \
+	noop_rs \
+	noop_statrs \
 	|| true
 
 define announce
@@ -150,7 +164,9 @@ bench: bin \
        bench_dynavian \
        bench_jamvm \
        bench_java \
-       bench_mono
+       bench_mono \
+       bench_rs \
+       bench_statrs
 
 .PHONY: bench_asm
 bench_asm: looprun noop_asm
@@ -403,3 +419,15 @@ bench_mono: looprun noop_mono.exe
 	$(call announce,"Mono (C#)")
 	./looprun 42 -2  /usr/bin/mono ./noop_mono.exe
 	./looprun 42 100 /usr/bin/mono ./noop_mono.exe
+
+.PHONY: bench_rs
+bench_rs: looprun noop_rs
+	$(call announce,"Rust (dynamic, default)")
+	./looprun 42 -2  noop_rs
+	./looprun 42 1000 noop_rs
+
+.PHONY: bench_statrs
+bench_statrs: looprun noop_statrs
+	$(call announce,"Rust (static, musl)")
+	./looprun 42 -2  noop_statrs
+	./looprun 42 1000 noop_statrs
